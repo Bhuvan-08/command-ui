@@ -1,0 +1,13 @@
+{
+  "cpu": [10, 12, 15, 20, 45, 80, 95, 99, 85, 60],
+  "memory": [20, 22, 25, 28, 40, 60, 75, 80, 70, 50],
+  "logs": [
+    "[10:00:01] INFO  System init...",
+    "[10:00:02] INFO  Services loaded",
+    "[10:00:05] WARN  Latency spike detected",
+    "[10:00:08] ERROR Connection timeout at 192.168.1.1",
+    "[10:00:09] CRIT  Kernel panic avoided",
+    "[10:00:10] INFO  Retrying connection..."
+  ],
+  "status": "critical"
+}
