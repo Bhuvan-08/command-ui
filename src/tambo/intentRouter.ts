@@ -3,54 +3,69 @@ import mockData from "../data/mockServerState.json";
 export function routeIntent(prompt: string) {
   const lower = prompt.toLowerCase();
 
-  // PERFORMANCE ISSUES
-  if (lower.includes("slow") || lower.includes("cpu")) {
-    return [
-      {
-        type: "IncidentModeBanner",
-        props: { mode: "incident" },
-      },
-      {
-        type: "SystemHealthGraph",
-        props: {
-          cpuData: mockData.cpu,
-          memoryData: mockData.memory,
-          status: "critical",
-        },
-      },
-    ];
-  }
+  const blocks = [];
 
-  // LOGS
-  if (lower.includes("log") || lower.includes("error")) {
-    return [
-      {
-        type: "LogTerminal",
-        props: {
-          logs: mockData.logs,
-          highlight: "ERROR",
-        },
-      },
-    ];
-  }
+  const isIncident =
+    lower.includes("slow") ||
+    lower.includes("crash") ||
+    lower.includes("error") ||
+    lower.includes("cpu") ||
+    lower.includes("down");
 
-  // ACTIONS
-  if (
+  const wantsLogs =
+    lower.includes("log") ||
+    lower.includes("error") ||
+    lower.includes("why");
+
+  const wantsAction =
     lower.includes("rollback") ||
     lower.includes("restart") ||
-    lower.includes("fix")
-  ) {
-    return [
-      {
-        type: "ActionPanel",
-        props: {
-          actions: ["rollback", "restart"],
-          requiresConfirmation: true,
-        },
+    lower.includes("fix");
+
+  /*
+    INCIDENT DETECTED
+  */
+  if (isIncident) {
+    blocks.push({
+      type: "IncidentModeBanner",
+      props: { mode: "incident" },
+    });
+
+    blocks.push({
+      type: "SystemHealthGraph",
+      props: {
+        cpuData: mockData.cpu,
+        memoryData: mockData.memory,
+        status: "critical",
       },
-    ];
+    });
   }
 
-  // DEFAULT
-  return [];
+  /*
+    LOG REQUEST
+  */
+  if (wantsLogs) {
+    blocks.push({
+      type: "LogTerminal",
+      props: {
+        logs: mockData.logs,
+        highlight: "ERROR",
+      },
+    });
+  }
+
+  /*
+    ACTION REQUEST
+  */
+  if (wantsAction) {
+    blocks.push({
+      type: "ActionPanel",
+      props: {
+        actions: ["rollback", "restart"],
+        requiresConfirmation: true,
+      },
+    });
+  }
+
+  return blocks;
 }

@@ -1,6 +1,6 @@
 import SystemHealthGraph from "../components/SystemHealthGraph";
-import {LogTerminal} from "../components/LogTerminal"
-import {ActionPanel} from "../components/ActionPanel";
+import LogTerminal from "../components/LogTerminal";
+import ActionPanel from "../components/ActionPanel";
 import IncidentModeBanner from "../components/IncidentModeBanner";
 
 import { ComponentSchemas } from "./schemas";

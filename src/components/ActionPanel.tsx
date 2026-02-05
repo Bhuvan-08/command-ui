@@ -1,47 +1,75 @@
 import React from 'react';
-import { ShieldAlert, RotateCcw, Rocket } from 'lucide-react';
+import { RotateCcw, Rocket, ShieldAlert } from 'lucide-react';
 
 interface ActionPanelProps {
   actions: ("restart" | "rollback" | "deploy")[];
   requiresConfirmation: boolean;
 }
 
-export const ActionPanel: React.FC<ActionPanelProps> = ({ 
-  actions = ["restart"], 
-  requiresConfirmation 
+const ActionPanel: React.FC<ActionPanelProps> = ({
+  actions = ["restart"],
+  requiresConfirmation,
 }) => {
+
+  const buttonBase =
+    "px-5 py-2 border rounded-md text-xs font-semibold tracking-wide flex items-center gap-2 transition-all";
+
   return (
-    <div className="p-6 border border-red-900/50 bg-red-950/10 rounded-lg flex flex-col items-center justify-center gap-4 animate-in fade-in slide-in-from-bottom-5">
-      <div className="flex items-center gap-2 text-red-500 mb-2">
-        <ShieldAlert className="w-6 h-6" />
-        <h3 className="font-bold tracking-wider">ADMIN_OVERRIDE_REQUIRED</h3>
+    <div className="w-full">
+
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+
+        <div className="flex items-center gap-2 text-yellow-400">
+          <ShieldAlert className="w-5 h-5" />
+
+          <h3 className="font-semibold tracking-wide text-zinc-200">
+            EXECUTION PANEL
+          </h3>
+        </div>
+
+        {requiresConfirmation && (
+          <span className="text-xs text-yellow-500 font-mono">
+            AUTHORIZATION REQUIRED
+          </span>
+        )}
+
       </div>
-      
-      <div className="flex gap-4">
+
+      {/* Actions */}
+      <div className="flex gap-3 flex-wrap">
+
         {actions.includes("restart") && (
-          <button className="px-6 py-2 bg-zinc-900 border border-zinc-700 hover:border-red-500 text-zinc-300 hover:text-red-500 transition-all uppercase text-xs font-bold tracking-widest flex items-center gap-2">
-            <RotateCcw className="w-4 h-4" /> Restart
+          <button
+            className={`${buttonBase} border-zinc-700 text-zinc-300 hover:border-yellow-500 hover:text-yellow-400`}
+          >
+            <RotateCcw className="w-4 h-4" />
+            Restart Service
           </button>
         )}
-        
+
         {actions.includes("rollback") && (
-          <button className="px-6 py-2 bg-red-900/20 border border-red-500 text-red-500 hover:bg-red-500 hover:text-black transition-all uppercase text-xs font-bold tracking-widest flex items-center gap-2">
-            <ShieldAlert className="w-4 h-4" /> Rollback
+          <button
+            className={`${buttonBase} border-red-500/60 text-red-400 hover:bg-red-500 hover:text-black`}
+          >
+            <ShieldAlert className="w-4 h-4" />
+            Rollback Release
           </button>
         )}
 
         {actions.includes("deploy") && (
-           <button className="px-6 py-2 bg-green-900/20 border border-green-500 text-green-500 hover:bg-green-500 hover:text-black transition-all uppercase text-xs font-bold tracking-widest flex items-center gap-2">
-           <Rocket className="w-4 h-4" /> Deploy
-         </button>
+          <button
+            className={`${buttonBase} border-green-500/60 text-green-400 hover:bg-green-500 hover:text-black`}
+          >
+            <Rocket className="w-4 h-4" />
+            Deploy Patch
+          </button>
         )}
+
       </div>
 
-      {requiresConfirmation && (
-        <p className="text-xs text-red-400 mt-2 animate-pulse">
-          ⚠️ AUTHORIZATION REQUIRED FOR EXECUTION
-        </p>
-      )}
     </div>
   );
 };
+
+export default ActionPanel;

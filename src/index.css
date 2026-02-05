@@ -1,13 +1,23 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --terminal-bg: #050505;
-  --terminal-green: #00ff41;
-  --terminal-grid: #1a1a1a;
+  --terminal-bg: #070707;
+  --terminal-card: #111111;
+  --terminal-border: #1f1f1f;
+  --terminal-green: #22c55e;
+}
+
+/* Global reset */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -15,48 +25,35 @@ body {
   color: #e5e5e5;
   font-family: 'JetBrains Mono', monospace;
   overflow-x: hidden;
-  /* subtle grid background */
-  background-image: 
-    linear-gradient(rgba(26, 26, 26, 0.5) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(26, 26, 26, 0.5) 1px, transparent 1px);
-  background-size: 30px 30px;
 }
 
-/* Custom Scrollbar */
+/* Cleaner scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
+
 ::-webkit-scrollbar-track {
-  background: #000; 
+  background: #050505; 
 }
+
 ::-webkit-scrollbar-thumb {
-  background: #333; 
-  border-radius: 4px;
+  background: #222;
+  border-radius: 10px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--terminal-green); 
+  background: #333;
 }
 
-/* CRT Scanline Effect (Optional - adds retro vibe) */
-.scanline::before {
-  content: " ";
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(18, 16, 16, 0) 50%,
-    rgba(0, 0, 0, 0.25) 50%
-  );
-  background-size: 100% 4px;
-  z-index: 50;
-  pointer-events: none;
+/* Terminal-style card */
+.terminal-card {
+  background: var(--terminal-card);
+  border: 1px solid var(--terminal-border);
+  border-radius: 14px;
+  padding: 18px;
 }
 
-/* Glowing Text Utility */
+/* VERY subtle glow — use sparingly */
 .text-glow {
-  text-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+  text-shadow: 0 0 6px rgba(34, 197, 94, 0.35);
 }

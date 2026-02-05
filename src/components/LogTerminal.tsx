@@ -1,53 +1,94 @@
 import React from 'react';
 
 interface LogTerminalProps {
-  logs: string[];
+  logs?: string[];
   highlight?: string;
 }
 
-export const LogTerminal: React.FC<LogTerminalProps> = ({ 
-  logs = [], 
-  highlight 
+const LogTerminal: React.FC<LogTerminalProps> = ({
+  logs = [],
+  highlight,
 }) => {
-  // Default logs if empty
-  const displayLogs = logs.length > 0 ? logs : [
-    "[10:00:01] INFO  System init...",
-    "[10:00:02] INFO  Services loaded",
-    "[10:00:05] WARN  Latency spike detected",
-    "[10:00:08] ERROR Connection timeout at 192.168.1.1",
-    "[10:00:09] CRIT  Kernel panic avoided"
-  ];
+
+  const displayLogs =
+    logs.length > 0
+      ? logs
+      : [
+          "[10:00:01] INFO  System init...",
+          "[10:00:02] INFO  Services loaded",
+          "[10:00:05] WARN  Latency spike detected",
+          "[10:00:08] ERROR Connection timeout at 192.168.1.1",
+          "[10:00:09] CRIT  Kernel panic avoided",
+        ];
+
+  const getSeverityColor = (log: string) => {
+    if (log.includes("CRIT")) return "text-red-400";
+    if (log.includes("ERROR")) return "text-red-500";
+    if (log.includes("WARN")) return "text-yellow-400";
+    if (log.includes("INFO")) return "text-zinc-400";
+
+    return "text-zinc-300";
+  };
+
+  const isHighlighted = (log: string) => {
+    if (!highlight) return false;
+    return log.toLowerCase().includes(highlight.toLowerCase());
+  };
 
   return (
-    <div className="w-full bg-black border border-zinc-800 rounded-md p-4 font-mono text-sm h-64 overflow-y-auto">
-       <div className="flex border-b border-zinc-800 pb-2 mb-2 sticky top-0 bg-black">
-          <div className="flex gap-2">
-            <div className="w-3 h-3 rounded-full bg-red-500"></div>
-            <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-            <div className="w-3 h-3 rounded-full bg-green-500"></div>
-          </div>
-          <span className="ml-4 text-zinc-500 text-xs">/var/log/syslog</span>
-       </div>
-       
-       <div className="flex flex-col gap-1 text-zinc-300">
-          {displayLogs.map((log, index) => {
-            const isError = log.includes("ERROR") || log.includes("CRIT");
-            const isHighlighted = highlight && log.toLowerCase().includes(highlight.toLowerCase());
-            
-            return (
-              <div 
-                key={index} 
-                className={`
-                  ${isError ? "text-red-500" : "text-zinc-400"}
-                  ${isHighlighted ? "bg-yellow-900/30 border-l-2 border-yellow-500 pl-2" : ""}
-                `}
-              >
-                <span className="opacity-50 mr-2">$</span>{log}
-              </div>
-            );
-          })}
-          <div className="animate-pulse">_</div>
-       </div>
+    <div className="w-full font-mono text-sm">
+
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-zinc-800 pb-2 mb-3">
+        
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full bg-red-500" />
+          <div className="w-3 h-3 rounded-full bg-yellow-500" />
+          <div className="w-3 h-3 rounded-full bg-green-500" />
+
+          <span className="ml-3 text-zinc-500 text-xs tracking-wide">
+            /var/log/syslog
+          </span>
+        </div>
+
+        <span className="text-xs text-zinc-600">
+          LIVE
+        </span>
+
+      </div>
+
+      {/* Logs */}
+      <div className="h-64 overflow-y-auto pr-2 space-y-1">
+
+        {displayLogs.map((log, index) => {
+
+          const severityColor = getSeverityColor(log);
+          const highlighted = isHighlighted(log);
+
+          return (
+            <div
+              key={index}
+              className={`
+                flex items-start
+                ${severityColor}
+                ${highlighted ? "bg-yellow-500/10 border-l-2 border-yellow-400 pl-2 rounded-sm" : ""}
+              `}
+            >
+              <span className="opacity-40 mr-2">$</span>
+
+              <span className="leading-relaxed">
+                {log}
+              </span>
+            </div>
+          );
+        })}
+
+        {/* Cursor */}
+        <div className="text-green-500 animate-pulse">▊</div>
+
+      </div>
     </div>
   );
 };
+
+export default LogTerminal;
