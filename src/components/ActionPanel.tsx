@@ -4,11 +4,13 @@ import { RotateCcw, Rocket, ShieldAlert } from 'lucide-react';
 interface ActionPanelProps {
   actions: ("restart" | "rollback" | "deploy")[];
   requiresConfirmation: boolean;
+  onAction?: (action: string) => void;
 }
 
 const ActionPanel: React.FC<ActionPanelProps> = ({
   actions = ["restart"],
   requiresConfirmation,
+  onAction,
 }) => {
 
   const buttonBase =
@@ -17,7 +19,6 @@ const ActionPanel: React.FC<ActionPanelProps> = ({
   return (
     <div className="w-full">
 
-      {/* Header */}
       <div className="flex items-center justify-between mb-4">
 
         <div className="flex items-center gap-2 text-yellow-400">
@@ -36,11 +37,11 @@ const ActionPanel: React.FC<ActionPanelProps> = ({
 
       </div>
 
-      {/* Actions */}
       <div className="flex gap-3 flex-wrap">
 
         {actions.includes("restart") && (
           <button
+            onClick={() => onAction?.("restart")}
             className={`${buttonBase} border-zinc-700 text-zinc-300 hover:border-yellow-500 hover:text-yellow-400`}
           >
             <RotateCcw className="w-4 h-4" />
@@ -50,6 +51,7 @@ const ActionPanel: React.FC<ActionPanelProps> = ({
 
         {actions.includes("rollback") && (
           <button
+            onClick={() => onAction?.("rollback")}
             className={`${buttonBase} border-red-500/60 text-red-400 hover:bg-red-500 hover:text-black`}
           >
             <ShieldAlert className="w-4 h-4" />
@@ -59,6 +61,7 @@ const ActionPanel: React.FC<ActionPanelProps> = ({
 
         {actions.includes("deploy") && (
           <button
+            onClick={() => onAction?.("deploy")}
             className={`${buttonBase} border-green-500/60 text-green-400 hover:bg-green-500 hover:text-black`}
           >
             <Rocket className="w-4 h-4" />

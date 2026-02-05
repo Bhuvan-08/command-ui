@@ -1,6 +1,6 @@
 import mockData from "../data/mockServerState.json";
 
-export function routeIntent(prompt: string) {
+export function routeIntent(prompt: string, incidentActive: boolean) {
   const lower = prompt.toLowerCase();
 
   const blocks = [];
@@ -25,7 +25,7 @@ export function routeIntent(prompt: string) {
   /*
     INCIDENT DETECTED
   */
-  if (isIncident) {
+  if (isIncident || (incidentActive && !lower.includes("stable"))) {
     blocks.push({
       type: "IncidentModeBanner",
       props: { mode: "incident" },
@@ -36,9 +36,10 @@ export function routeIntent(prompt: string) {
       props: {
         cpuData: mockData.cpu,
         memoryData: mockData.memory,
-        status: "critical",
+        status: incidentActive ? "critical" : "normal",
       },
     });
+
   }
 
   /*

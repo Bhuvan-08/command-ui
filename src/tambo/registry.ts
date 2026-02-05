@@ -2,6 +2,7 @@ import SystemHealthGraph from "../components/SystemHealthGraph";
 import LogTerminal from "../components/LogTerminal";
 import ActionPanel from "../components/ActionPanel";
 import IncidentModeBanner from "../components/IncidentModeBanner";
+import SystemMessage from "../components/SystemMessage";
 
 import { ComponentSchemas } from "./schemas";
 
@@ -22,4 +23,9 @@ export const ComponentRegistry = {
     component: IncidentModeBanner,
     schema: ComponentSchemas.IncidentModeBanner,
   },
+  SystemMessage: {
+  component: SystemMessage,
+  schema: null, // safe for hackathon — no props validation needed
+  },
+
 };
