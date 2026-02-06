@@ -32,6 +32,15 @@ export function routeIntent(prompt: string, incidentActive: boolean) {
     });
 
     blocks.push({
+      type: "IncidentSummary",
+      props: {
+        cause: "Database connection saturation",
+        impact: "Elevated API latency detected across services",
+        recommendation: "Rollback latest deployment",
+      },
+    });
+
+    blocks.push({
       type: "SystemHealthGraph",
       props: {
         cpuData: mockData.cpu,

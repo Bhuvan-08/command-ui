@@ -5,8 +5,9 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
-  CartesianGrid,
 } from "recharts";
+
+import { useEffect, useState } from "react";
 
 type Props = {
   cpuData: number[];
@@ -20,11 +21,48 @@ export default function SystemHealthGraph({
   status,
 }: Props) {
 
-  const data = cpuData.map((cpu, i) => ({
-    time: `${i}s`,
+  const [liveCpu, setLiveCpu] = useState(cpuData);
+  const [liveMemory, setLiveMemory] = useState(memoryData);
+
+  // 🔥 Controlled metric drift
+  useEffect(() => {
+
+    const interval = setInterval(() => {
+
+      setLiveCpu(prev => {
+        const last = prev[prev.length - 1];
+
+        const next = Math.max(
+          5,
+          Math.min(95, last + (Math.random() * 6 - 3))
+        );
+
+        return [...prev.slice(1), Number(next.toFixed(1))];
+      });
+
+      setLiveMemory(prev => {
+        const last = prev[prev.length - 1];
+
+        const next = Math.max(
+          10,
+          Math.min(90, last + (Math.random() * 4 - 2))
+        );
+
+        return [...prev.slice(1), Number(next.toFixed(1))];
+      });
+
+    }, 2200); // slow = professional
+
+    return () => clearInterval(interval);
+
+  }, []);
+
+  const data = liveCpu.map((cpu, i) => ({
+    time: i,
     cpu,
-    memory: memoryData[i],
+    memory: liveMemory[i],
   }));
+
 
   const statusColor = {
     normal: "text-green-400",
@@ -32,71 +70,69 @@ export default function SystemHealthGraph({
     critical: "text-red-400",
   };
 
+
   return (
     <div className="w-full">
 
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      {/* HEADER */}
+      <div className="flex items-center justify-between mb-3">
 
-        <h2 className="font-semibold text-zinc-200 tracking-wide">
+        <h2 className="font-mono text-sm tracking-wide text-zinc-400">
           SYSTEM HEALTH
         </h2>
 
-        <div className={`text-xs font-mono ${statusColor[status]}`}>
-          ● {status.toUpperCase()}
-        </div>
+        <span className={`font-mono text-xs ${statusColor[status]}`}>
+          {status.toUpperCase()}
+        </span>
 
       </div>
 
-      {/* Chart */}
-      <ResponsiveContainer width="100%" height={260}>
-        <LineChart data={data}>
+      {/* GRAPH CONTAINER */}
+      <div className="p-4 border border-zinc-800 rounded-xl bg-black">
 
-          <CartesianGrid
-            strokeDasharray="3 3"
-            stroke="#1f1f1f"
-          />
+        <ResponsiveContainer width="100%" height={260}>
+          <LineChart data={data}>
 
-          <XAxis
-            dataKey="time"
-            stroke="#666"
-            tick={{ fontSize: 11 }}
-          />
+            <XAxis
+              dataKey="time"
+              stroke="#555"
+              tick={{ fontSize: 10 }}
+            />
 
-          <YAxis
-            stroke="#666"
-            tick={{ fontSize: 11 }}
-            domain={[0, 100]}
-          />
+            <YAxis
+              stroke="#555"
+              tick={{ fontSize: 10 }}
+              domain={[0, 100]}
+            />
 
-          <Tooltip
-            contentStyle={{
-              backgroundColor: "#0a0a0a",
-              border: "1px solid #222",
-              fontSize: "12px",
-            }}
-          />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "#050505",
+                border: "1px solid #27272a",
+                fontSize: "12px",
+              }}
+            />
 
-          {/* CPU — dominant */}
-          <Line
-            type="monotone"
-            dataKey="cpu"
-            stroke="#22c55e"
-            strokeWidth={2}
-            dot={false}
-          />
+            <Line
+              type="monotone"
+              dataKey="cpu"
+              stroke="#f87171"
+              dot={false}
+              strokeWidth={2}
+            />
 
-          {/* Memory — secondary */}
-          <Line
-            type="monotone"
-            dataKey="memory"
-            stroke="#38bdf8"
-            strokeWidth={1.5}
-            dot={false}
-          />
+            <Line
+              type="monotone"
+              dataKey="memory"
+              stroke="#60a5fa"
+              dot={false}
+              strokeWidth={2}
+            />
 
-        </LineChart>
-      </ResponsiveContainer>
+          </LineChart>
+        </ResponsiveContainer>
+
+      </div>
 
     </div>
   );

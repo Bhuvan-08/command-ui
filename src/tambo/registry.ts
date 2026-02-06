@@ -3,8 +3,9 @@ import LogTerminal from "../components/LogTerminal";
 import ActionPanel from "../components/ActionPanel";
 import IncidentModeBanner from "../components/IncidentModeBanner";
 import SystemMessage from "../components/SystemMessage";
-
+import IncidentSummary from "../components/IncidentSummary";
 import { ComponentSchemas } from "./schemas";
+import CommandBubble from "../components/CommandBubble";
 
 export const ComponentRegistry = {
   SystemHealthGraph: {
@@ -24,8 +25,16 @@ export const ComponentRegistry = {
     schema: ComponentSchemas.IncidentModeBanner,
   },
   SystemMessage: {
-  component: SystemMessage,
-  schema: null, // safe for hackathon — no props validation needed
+    component: SystemMessage,
+    schema: null,
+  },
+  IncidentSummary: {
+    component: IncidentSummary,
+    schema: null,
+  },
+  CommandBubble: {
+    component: CommandBubble,
+    schema: null,
   },
 
 };

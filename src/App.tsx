@@ -20,6 +20,34 @@ function App() {
   const [incidentActive, setIncidentActive] = useState(false);
 
   const bottomRef = useRef<HTMLDivElement>(null);
+  const booted = useRef(false);
+
+  // ✅ Boot sequence
+  useEffect(() => {
+
+    if (booted.current) return;
+    booted.current = true;
+
+    const bootMessages = [
+      "Initializing command interface...",
+      "Connecting to observability cluster...",
+      "All systems operational.",
+    ];
+
+    bootMessages.forEach((msg, index) => {
+      setTimeout(() => {
+        setComponents(prev => [
+          ...prev,
+          {
+            id: crypto.randomUUID(),
+            type: "SystemMessage",
+            props: { message: msg, variant: "info" },
+          },
+        ]);
+      }, index * 600);
+    });
+
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,6 +55,17 @@ function App() {
 
     const prompt = input;
     setInput("");
+
+    // COMMAND HISTORY
+    setComponents(prev => [
+      ...prev,
+      {
+        id: crypto.randomUUID(),
+        type: "CommandBubble",
+        props: { command: prompt },
+      }
+    ]);
+
     setIsThinking(true);
 
     setTimeout(() => {
@@ -34,6 +73,7 @@ function App() {
       const detectedComponents = routeIntent(prompt, incidentActive);
 
       if (detectedComponents.length > 0) {
+
         const newItems = detectedComponents.map((comp) => ({
           id: crypto.randomUUID(),
           type: comp.type as keyof typeof ComponentRegistry,
@@ -43,12 +83,10 @@ function App() {
         newItems.forEach((item, index) => {
           setTimeout(() => {
             setComponents(prev => [...prev, item]);
-          }, index * 450); // spacing between tool deployment
+          }, index * 450);
         });
-
       }
 
-      // Detect incident trigger
       const lower = prompt.toLowerCase();
 
       if (
@@ -59,16 +97,16 @@ function App() {
       ) {
         setIncidentActive(true);
       }
-      // Detect resolution
+
       if (
         lower.includes("resolved") ||
         lower.includes("fixed") ||
         lower.includes("stable") ||
         lower.includes("all good")
       ) {
+
         setIncidentActive(false);
 
-        // Optional — show system recovery message
         setComponents(prev => [
           ...prev,
           {
@@ -85,10 +123,8 @@ function App() {
       setIsThinking(false);
 
     }, 650);
-
   };
 
-  // 🔥 Action execution handler
   const handleAction = (action: ActionType) => {
 
     const messages: Record<ActionType, string> = {
@@ -103,7 +139,6 @@ function App() {
       deploy: "✔ Patch deployed successfully.",
     };
 
-    // Show execution start
     setComponents(prev => [
       ...prev,
       {
@@ -116,7 +151,6 @@ function App() {
       }
     ]);
 
-    // Simulate completion
     setTimeout(() => {
       setComponents(prev => [
         ...prev,
@@ -132,16 +166,15 @@ function App() {
     }, 1500);
   };
 
-  // Auto-scroll
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [components, isThinking]);
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center bg-black">
+    <div className="h-dvh w-full flex flex-col bg-black overflow-hidden">
 
       {/* HEADER */}
-      <div className="w-full max-w-5xl flex justify-between items-center p-6 border-b border-zinc-900 fixed top-0 z-40 bg-black/70 backdrop-blur">
+      <div className="flex justify-between items-center p-6 border-b border-zinc-900 bg-black/80 backdrop-blur shrink-0">
 
         <div className="flex items-center gap-3">
           <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]" />
@@ -158,12 +191,11 @@ function App() {
       </div>
 
 
-      {/* MAIN AREA */}
-      <div className="w-full max-w-4xl flex-1 pt-32 pb-40 px-6 flex flex-col gap-6">
+      {/* SCROLLABLE CONTENT */}
+      <div className="flex-1 overflow-y-auto px-6 py-8 flex flex-col gap-3">
 
         <AnimatePresence>
 
-          {/* EMPTY STATE */}
           {components.length === 0 && !isThinking && (
             <motion.div
               initial={{ opacity: 0 }}
@@ -171,14 +203,12 @@ function App() {
               className="text-center text-zinc-600 mt-20"
             >
               <Terminal className="w-16 h-16 mx-auto mb-4 opacity-20" />
-
               <p className="text-sm tracking-widest">
                 SYSTEM READY — DESCRIBE INCIDENT
               </p>
             </motion.div>
           )}
 
-          {/* THINKING */}
           {isThinking && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -189,7 +219,6 @@ function App() {
             </motion.div>
           )}
 
-          {/* GENERATED COMPONENTS */}
           {components.map((item) => {
 
             const RegistryItem = ComponentRegistry[item.type];
@@ -203,11 +232,11 @@ function App() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35 }}
-                className="terminal-card shadow-lg"
+                className={`${item.type === "CommandBubble" ? "mt-6" : ""}`}
               >
                 <Component
                   {...item.props}
-                  onAction={handleAction} // SAFE — ignored by components that don't use it
+                  onAction={handleAction}
                 />
               </motion.div>
             );
@@ -220,14 +249,14 @@ function App() {
       </div>
 
 
-      {/* COMMAND BAR */}
-      <div className="fixed bottom-10 w-full max-w-2xl px-6 z-50">
+      {/* ✅ COMMAND BAR — NOW STRUCTURALLY LOCKED */}
+      <div className="border-t border-zinc-900 bg-black p-4 shrink-0">
 
-        <form onSubmit={handleSubmit} className="relative">
+        <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
 
-          <div className="flex items-center bg-black border border-zinc-800 rounded-full px-6 py-4 shadow-2xl focus-within:border-green-500/50 transition-all">
+          <div className="flex items-center bg-black border border-zinc-800 rounded-lg px-4 py-3 focus-within:border-green-500/50 transition-all">
 
-            <Command className="w-5 h-5 text-zinc-500 mr-4" />
+            <Command className="w-5 h-5 text-zinc-500 mr-3" />
 
             <input
               type="text"
@@ -240,12 +269,13 @@ function App() {
 
             <button
               type="submit"
-              className="ml-3 p-2 bg-zinc-900 rounded-full hover:bg-green-500 hover:text-black transition-colors"
+              className="ml-3 p-2 bg-zinc-900 rounded-md hover:bg-green-500 hover:text-black transition-colors"
             >
               <Send className="w-4 h-4" />
             </button>
 
           </div>
+
         </form>
 
       </div>

@@ -14,12 +14,23 @@ export default function SystemMessage({
     warning: "text-yellow-400",
   };
 
-  return (
-    <div className="font-mono text-sm">
+  const time = new Date().toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
 
+  return (
+    <div className="font-mono text-sm flex items-start gap-4">
+
+      {/* Timestamp — visually quieter */}
+      <span className="text-zinc-600 text-xs w-[55px] shrink-0 mt-[2px]">
+        {time}
+      </span>
+
+      {/* Dot + message grouped */}
       <div className="flex items-start gap-2">
 
-        <span className={`${colors[variant]} mt-[2px]`}>
+        <span className={`${colors[variant]} mt-[6px]`}>
           ●
         </span>
 
