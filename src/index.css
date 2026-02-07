@@ -18,6 +18,7 @@
 
 html {
   scroll-behavior: smooth;
+  font-size: 18px;
 }
 
 body {
@@ -50,7 +51,7 @@ body {
   background: var(--terminal-card);
   border: 1px solid var(--terminal-border);
   border-radius: 14px;
-  padding: 18px;
+  padding: 24px;
 }
 
 /* VERY subtle glow — use sparingly */
